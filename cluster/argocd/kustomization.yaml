@@ -4,4 +4,8 @@ kind: Kustomization
 resources:
 - argocd.namespace.yaml
 - argocd.install.yaml
-- argocd.config.yaml
+patches:
+- path: argocd.config.yaml
+  target:
+    kind: ConfigMap
+    name: argocd-cm

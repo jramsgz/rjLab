@@ -1,0 +1,145 @@
+# Taskfile for plain Talos cluster management
+# Install task: https://taskfile.dev/installation/
+# Usage: task <command>
+#
+# Before first use, set these environment variables or edit the .env file:
+#   CLUSTER_NAME   - Name of your cluster
+#   CLUSTER_ENDPOINT - Control plane endpoint (https://<node-ip>:6443)
+#   NODE_IP        - IP address of your Talos node
+#
+version: "3"
+
+dotenv: [".env"]
+
+vars:
+  CLUSTER_NAME: '{{.CLUSTER_NAME | default "homelab"}}'
+  CLUSTER_ENDPOINT: '{{.CLUSTER_ENDPOINT | default "https://192.168.1.100:6443"}}'
+  NODE_IP: '{{.NODE_IP | default "192.168.1.100"}}'
+  TALOS_DIR: "cluster/talos"
+
+tasks:
+  gen-config:
+    desc: Generate Talos machine config with all patches applied
+    cmds:
+      - mkdir -p {{.TALOS_DIR}}
+      - |
+        talosctl gen config {{.CLUSTER_NAME}} {{.CLUSTER_ENDPOINT}} \
+          --output {{.TALOS_DIR}} \
+          --output-types controlplane \
+          --with-docs=false \
+          --with-examples=false \
+          --config-patch @cluster/patches/cni.yml \
+          --config-patch @cluster/patches/disable-kubeproxy.yml \
+          --config-patch @cluster/patches/extraManifests.yml \
+          --config-patch @cluster/patches/metrics-server.yml \
+          --config-patch @cluster/patches/workload-on-cp.yml \
+          --config-patch @cluster/patches/backup-disk.yml \
+          --config-patch @cluster/patches/media-disk.yml
+    status:
+      - test -f {{.TALOS_DIR}}/controlplane.yaml
+
+  gen-config-force:
+    desc: Regenerate Talos machine config (overwrite existing)
+    cmds:
+      - mkdir -p {{.TALOS_DIR}}
+      - |
+        talosctl gen config {{.CLUSTER_NAME}} {{.CLUSTER_ENDPOINT}} \
+          --output {{.TALOS_DIR}} \
+          --output-types controlplane \
+          --with-docs=false \
+          --with-examples=false \
+          --force \
+          --config-patch @cluster/patches/cni.yml \
+          --config-patch @cluster/patches/disable-kubeproxy.yml \
+          --config-patch @cluster/patches/extraManifests.yml \
+          --config-patch @cluster/patches/metrics-server.yml \
+          --config-patch @cluster/patches/workload-on-cp.yml \
+          --config-patch @cluster/patches/backup-disk.yml \
+          --config-patch @cluster/patches/media-disk.yml
+
+  apply-config:
+    desc: Apply the generated config to the Talos node
+    deps: [gen-config]
+    cmds:
+      - talosctl apply-config --insecure --nodes {{.NODE_IP}} --file {{.TALOS_DIR}}/controlplane.yaml
+
+  bootstrap:
+    desc: Bootstrap the Talos cluster (run once after first apply)
+    cmds:
+      - talosctl bootstrap --nodes {{.NODE_IP}} --endpoints {{.NODE_IP}} --talosconfig {{.TALOS_DIR}}/talosconfig
+
+  kubeconfig:
+    desc: Fetch kubeconfig from the cluster
+    cmds:
+      - talosctl kubeconfig --nodes {{.NODE_IP}} --endpoints {{.NODE_IP}} --talosconfig {{.TALOS_DIR}}/talosconfig
+
+  health:
+    desc: Check cluster health
+    cmds:
+      - talosctl health --nodes {{.NODE_IP}} --endpoints {{.NODE_IP}} --talosconfig {{.TALOS_DIR}}/talosconfig
+
+  dashboard:
+    desc: Open Talos dashboard
+    cmds:
+      - talosctl dashboard --nodes {{.NODE_IP}} --endpoints {{.NODE_IP}} --talosconfig {{.TALOS_DIR}}/talosconfig
+
+  reset:
+    desc: Reset the Talos node (DESTRUCTIVE - removes all data)
+    prompt: This will RESET the node and DELETE all data. Are you sure?
+    cmds:
+      - talosctl reset --nodes {{.NODE_IP}} --endpoints {{.NODE_IP}} --talosconfig {{.TALOS_DIR}}/talosconfig --graceful=false
+
+  upgrade-talos:
+    desc: Upgrade Talos on the node
+    vars:
+      TALOS_VERSION: '{{.CLI_ARGS | default "v1.9.5"}}'
+      # Get your schematic ID from https://factory.talos.dev/
+      SCHEMATIC_ID: '{{.SCHEMATIC_ID | default "YOUR_SCHEMATIC_ID"}}'
+    cmds:
+      - |
+        talosctl upgrade \
+          --nodes {{.NODE_IP}} \
+          --endpoints {{.NODE_IP}} \
+          --talosconfig {{.TALOS_DIR}}/talosconfig \
+          --image factory.talos.dev/installer/{{.SCHEMATIC_ID}}:{{.TALOS_VERSION}}
+
+  upgrade-k8s:
+    desc: Upgrade Kubernetes on the cluster
+    vars:
+      K8S_VERSION: '{{.CLI_ARGS | default "v1.32.3"}}'
+    cmds:
+      - |
+        talosctl upgrade-k8s \
+          --nodes {{.NODE_IP}} \
+          --endpoints {{.NODE_IP}} \
+          --talosconfig {{.TALOS_DIR}}/talosconfig \
+          --to {{.K8S_VERSION}}
+
+  vault-init:
+    desc: Initialize Vault (run once after first deployment)
+    cmds:
+      - |
+        kubectl exec -n vault vault-0 -- vault operator init \
+          -key-shares=1 \
+          -key-threshold=1 \
+          -format=json > cluster-keys.json
+      - echo "IMPORTANT: Save cluster-keys.json securely and encrypt it!"
+      - echo "Run 'task vault-unseal' to unseal Vault"
+
+  vault-unseal:
+    desc: Unseal Vault using the saved keys
+    cmds:
+      - |
+        VAULT_UNSEAL_KEY=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[0]")
+        kubectl exec -n vault vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
+
+  vault-avp:
+    desc: Patch ArgoCD with Vault Plugin sidecar containers
+    cmds:
+      - kubectl apply -k cluster/argocd/vault-argocd/ -n argocd
+      - echo "ArgoCD repo-server will restart with AVP sidecars"
+
+  vault-port-forward:
+    desc: Port-forward Vault UI to localhost:8200
+    cmds:
+      - kubectl port-forward -n vault svc/vault 8200:8200

@@ -1,0 +1,84 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sonarr
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts/
+    chart: app-template
+    targetRevision: 3.7.3
+    plugin:
+      name: argocd-vault-plugin-helm
+      env:
+        - name: HELM_VALUES
+          value: |
+            controllers:
+              sonarr:
+                containers:
+                  app:
+                    image:
+                      repository: ghcr.io/onedr0p/sonarr
+                      tag: 4.0.14.2939
+                    env:
+                      TZ: Europe/Paris
+                      SONARR__AUTH__APIKEY: <path:kv/sonarr#token>
+                    probes:
+                      liveness:
+                        enabled: true
+                      readiness:
+                        enabled: true
+                      startup:
+                        enabled: true
+                        spec:
+                          failureThreshold: 30
+                          periodSeconds: 5
+                    resources:
+                      requests:
+                        cpu: 50m
+                        memory: 256Mi
+                      limits:
+                        memory: 1Gi
+            service:
+              app:
+                controller: sonarr
+                ports:
+                  http:
+                    port: 8989
+            ingress:
+              app:
+                className: traefik
+                annotations:
+                  cert-manager.io/cluster-issuer: cloudflare
+                hosts:
+                  - host: "sonarr.<path:kv/cluster#domain>"
+                    paths:
+                      - path: /
+                        service:
+                          identifier: app
+                          port: http
+                tls:
+                  - hosts:
+                      - "sonarr.<path:kv/cluster#domain>"
+                    secretName: sonarr-tls
+            persistence:
+              config:
+                type: persistentVolumeClaim
+                accessMode: ReadWriteOnce
+                size: 5Gi
+                globalMounts:
+                  - path: /config
+              media:
+                type: hostPath
+                hostPath: /data/media
+                globalMounts:
+                  - path: /data
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sonarr
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true

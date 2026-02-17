@@ -1,0 +1,60 @@
+# Example: How to back up a PVC with Volsync + Restic to local Minio
+#
+# 1. Create an ExternalSecret in the app's namespace pulling restic credentials
+# 2. Create a ReplicationSource targeting the PVC
+#
+# Copy and customise this file for each app you want to back up.
+# Then add it to kustomization.yaml in this directory.
+#
+# ---
+# # Step 1: Pull credentials into the app namespace
+# apiVersion: external-secrets.io/v1
+# kind: ExternalSecret
+# metadata:
+#   name: restic-credentials
+#   namespace: <APP_NAMESPACE>
+# spec:
+#   refreshInterval: "30s"
+#   secretStoreRef:
+#     name: vault-backend
+#     kind: ClusterSecretStore
+#   target:
+#     name: restic-credentials
+#   data:
+#     - secretKey: AWS_ACCESS_KEY_ID
+#       remoteRef:
+#         key: restic
+#         property: AWS_ACCESS_KEY_ID
+#     - secretKey: AWS_SECRET_ACCESS_KEY
+#       remoteRef:
+#         key: restic
+#         property: AWS_SECRET_ACCESS_KEY
+#     - secretKey: RESTIC_PASSWORD
+#       remoteRef:
+#         key: restic
+#         property: RESTIC_PASSWORD
+#     - secretKey: RESTIC_REPOSITORY
+#       remoteRef:
+#         key: restic
+#         property: RESTIC_REPOSITORY_<APP_NAME>
+# ---
+# # Step 2: Create the backup schedule
+# apiVersion: volsync.backube/v1alpha1
+# kind: ReplicationSource
+# metadata:
+#   name: <APP_NAME>-backup
+#   namespace: <APP_NAMESPACE>
+# spec:
+#   sourcePVC: <PVC_NAME>
+#   trigger:
+#     schedule: "*/10 * * * *"
+#   restic:
+#     pruneIntervalDays: 7
+#     repository: restic-credentials
+#     retain:
+#       hourly: 3
+#       daily: 5
+#       weekly: 4
+#       monthly: 2
+#       yearly: 1
+#     copyMethod: Clone

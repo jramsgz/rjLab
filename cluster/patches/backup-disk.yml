@@ -1,0 +1,19 @@
+# Mount the backup HDD for Minio
+# Update the 'source' to match your backup disk device path (e.g. /dev/sdb1)
+# Format the disk with ext4/xfs beforehand if needed
+machine:
+  kubelet:
+    extraMounts:
+      - destination: /var/minio-data
+        type: bind
+        source: /var/minio-data
+        options:
+          - bind
+          - rshared
+          - rw
+  disks:
+    # Uncomment and adjust to auto-partition the backup disk
+    # - device: /dev/sdb
+    #   partitions:
+    #     - mountpoint: /var/minio-data
+    #       size: 0  # use entire disk

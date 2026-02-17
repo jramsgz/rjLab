@@ -1,0 +1,12 @@
+# Mount a directory on the storage HDD for shared media (downloads, movies, series)
+# All *arr apps and the downloader share this hostPath
+machine:
+  kubelet:
+    extraMounts:
+      - destination: /data/media
+        type: bind
+        source: /data/media
+        options:
+          - bind
+          - rshared
+          - rw

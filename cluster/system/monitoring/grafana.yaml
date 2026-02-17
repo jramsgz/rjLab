@@ -1,0 +1,54 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: 10.5.8
+    helm:
+      values: |
+        adminUser: <path:kv/grafana#user>
+        adminPassword: <path:kv/grafana#pass>
+        ingress:
+          enabled: true
+          ingressClassName: traefik
+          annotations:
+            cert-manager.io/cluster-issuer: cloudflare
+          hosts:
+            - "grafana.<path:kv/cluster#domain>"
+          tls:
+            - secretName: grafana-tls
+              hosts:
+                - "grafana.<path:kv/cluster#domain>"
+        persistence:
+          type: pvc
+          enabled: true
+        assertNoLeakedSecrets: false
+        grafana.ini:
+            server:
+              root_url: https://grafana.<path:kv/cluster#domain>
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+            - name: Prometheus
+              type: prometheus
+              url: http://prometheus-stack-kube-prom-prometheus:9090
+              access: proxy
+              isDefault: false
+        sidecar:
+          datasources:
+            enabled: true

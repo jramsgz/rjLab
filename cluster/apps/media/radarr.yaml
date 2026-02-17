@@ -1,0 +1,84 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: radarr
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts/
+    chart: app-template
+    targetRevision: 3.7.3
+    plugin:
+      name: argocd-vault-plugin-helm
+      env:
+        - name: HELM_VALUES
+          value: |
+            controllers:
+              radarr:
+                containers:
+                  app:
+                    image:
+                      repository: ghcr.io/onedr0p/radarr
+                      tag: 5.20.2.9724
+                    env:
+                      TZ: Europe/Paris
+                      RADARR__AUTH__APIKEY: <path:kv/radarr#token>
+                    probes:
+                      liveness:
+                        enabled: true
+                      readiness:
+                        enabled: true
+                      startup:
+                        enabled: true
+                        spec:
+                          failureThreshold: 30
+                          periodSeconds: 5
+                    resources:
+                      requests:
+                        cpu: 50m
+                        memory: 256Mi
+                      limits:
+                        memory: 1Gi
+            service:
+              app:
+                controller: radarr
+                ports:
+                  http:
+                    port: 7878
+            ingress:
+              app:
+                className: traefik
+                annotations:
+                  cert-manager.io/cluster-issuer: cloudflare
+                hosts:
+                  - host: "radarr.<path:kv/cluster#domain>"
+                    paths:
+                      - path: /
+                        service:
+                          identifier: app
+                          port: http
+                tls:
+                  - hosts:
+                      - "radarr.<path:kv/cluster#domain>"
+                    secretName: radarr-tls
+            persistence:
+              config:
+                type: persistentVolumeClaim
+                accessMode: ReadWriteOnce
+                size: 5Gi
+                globalMounts:
+                  - path: /config
+              media:
+                type: hostPath
+                hostPath: /data/media
+                globalMounts:
+                  - path: /data
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: radarr
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true

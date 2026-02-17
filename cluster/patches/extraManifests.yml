@@ -1,0 +1,12 @@
+cluster:
+  extraManifests:
+   # --- Cilium Installation ---
+   - https://raw.githubusercontent.com/jramsgz/rjLab/refs/heads/main/cluster/cilium/install-cilium.yaml
+   # --- ArgoCD Installation ---
+   - https://raw.githubusercontent.com/jramsgz/rjLab/refs/heads/main/cluster/argocd/argocd.namespace.yaml
+   - https://raw.githubusercontent.com/jramsgz/rjLab/refs/heads/main/cluster/argocd/argocd.install.yaml
+   # --- Metrics Server Installation ---
+   - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
+   - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+   # --- Cluster Bootstrap (ArgoCD self-provisions from here) ---
+   - https://raw.githubusercontent.com/jramsgz/rjLab/refs/heads/main/cluster/bootstrap/bootstrap.yml

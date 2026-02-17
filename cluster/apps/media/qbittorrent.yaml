@@ -1,0 +1,98 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: qbittorrent
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts/
+    chart: app-template
+    targetRevision: 3.7.3
+    plugin:
+      name: argocd-vault-plugin-helm
+      env:
+        - name: HELM_VALUES
+          value: |
+            controllers:
+              qbittorrent:
+                containers:
+                  app:
+                    image:
+                      repository: ghcr.io/onedr0p/qbittorrent
+                      tag: 5.0.4
+                    env:
+                      TZ: Europe/Paris
+                      QBITTORRENT__PORT: 8080
+                      QBITTORRENT__BT_PORT: 50413
+                    probes:
+                      liveness:
+                        enabled: true
+                      readiness:
+                        enabled: true
+                      startup:
+                        enabled: true
+                        spec:
+                          failureThreshold: 30
+                          periodSeconds: 5
+                    resources:
+                      requests:
+                        cpu: 50m
+                        memory: 256Mi
+                      limits:
+                        memory: 2Gi
+            service:
+              app:
+                controller: qbittorrent
+                ports:
+                  http:
+                    port: 8080
+              bittorrent:
+                controller: qbittorrent
+                type: LoadBalancer
+                annotations:
+                  lbipam.cilium.io/ips: "<path:kv/cluster#IP>"
+                  lbipam.cilium.io/sharing-key: "public"
+                ports:
+                  bittorrent-tcp:
+                    port: 50413
+                    protocol: TCP
+                  bittorrent-udp:
+                    port: 50413
+                    protocol: UDP
+            ingress:
+              app:
+                className: traefik
+                annotations:
+                  cert-manager.io/cluster-issuer: cloudflare
+                hosts:
+                  - host: "qbt.<path:kv/cluster#domain>"
+                    paths:
+                      - path: /
+                        service:
+                          identifier: app
+                          port: http
+                tls:
+                  - hosts:
+                      - "qbt.<path:kv/cluster#domain>"
+                    secretName: qbittorrent-tls
+            persistence:
+              config:
+                type: persistentVolumeClaim
+                accessMode: ReadWriteOnce
+                size: 1Gi
+                globalMounts:
+                  - path: /config
+              media:
+                type: hostPath
+                hostPath: /data/media
+                globalMounts:
+                  - path: /data
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: qbittorrent
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true

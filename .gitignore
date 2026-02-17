@@ -1,0 +1,9 @@
+cluster-keys.json
+vault-credentials.yaml
+
+# Talos generated configs (contain secrets)
+cluster/talos/
+*.talosconfig
+
+# Environment files
+.env

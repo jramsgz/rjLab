@@ -85,7 +85,7 @@ spec:
                   - path: /config
               media:
                 type: hostPath
-                hostPath: /data/media
+                hostPath: /var/data/media
                 globalMounts:
                   - path: /data
   destination:

@@ -16,6 +16,7 @@ vars:
   CLUSTER_ENDPOINT: '{{.CLUSTER_ENDPOINT | default "https://192.168.1.100:6443"}}'
   NODE_IP: '{{.NODE_IP | default "192.168.1.100"}}'
   TALOS_DIR: "cluster/talos"
+  TALOS_DISK: "sda" # Update this if your target disk is different (e.g., sdb)
 
 tasks:
   gen-config:
@@ -25,8 +26,8 @@ tasks:
       - |
         talosctl gen config {{.CLUSTER_NAME}} {{.CLUSTER_ENDPOINT}} \
           --output {{.TALOS_DIR}} \
-          --output-types controlplane \
-          --with-docs=false \
+          --install-disk /dev/{{.TALOS_DISK}} \
+          --with-docs=true \
           --with-examples=false \
           --config-patch @cluster/patches/cni.yml \
           --config-patch @cluster/patches/disable-kubeproxy.yml \
@@ -45,8 +46,8 @@ tasks:
       - |
         talosctl gen config {{.CLUSTER_NAME}} {{.CLUSTER_ENDPOINT}} \
           --output {{.TALOS_DIR}} \
-          --output-types controlplane \
-          --with-docs=false \
+          --install-disk /dev/{{.TALOS_DISK}} \
+          --with-docs=true \
           --with-examples=false \
           --force \
           --config-patch @cluster/patches/cni.yml \
@@ -123,7 +124,7 @@ tasks:
           -key-shares=1 \
           -key-threshold=1 \
           -format=json > cluster-keys.json
-      - echo "IMPORTANT: Save cluster-keys.json securely and encrypt it!"
+      - echo "IMPORTANT! Save cluster-keys.json securely and encrypt it!"
       - echo "Run 'task vault-unseal' to unseal Vault"
 
   vault-unseal:

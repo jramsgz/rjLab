@@ -1,11 +1,12 @@
 # Mount a directory on the storage HDD for shared media (downloads, movies, series)
 # All *arr apps and the downloader share this hostPath
+# Note: Talos has a read-only rootfs, so we must use /var (which is writable)
 machine:
   kubelet:
     extraMounts:
-      - destination: /data/media
+      - destination: /var/data/media
         type: bind
-        source: /data/media
+        source: /var/data/media
         options:
           - bind
           - rshared

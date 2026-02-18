@@ -26,7 +26,7 @@ spec:
             name: "kromgo"
             image:
               repository: ghcr.io/kashalls/kromgo
-              tag: "latest"
+              tag: "v0.7.5"
             configMap:
               enabled: false
               existingConfigMap:

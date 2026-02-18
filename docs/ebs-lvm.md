@@ -58,7 +58,7 @@ parameters:
   storage: "lvm"
   volgroup: "lvmvg"
 volumeBindingMode: WaitForFirstConsumer
-reclaimPolicy: Delete
+reclaimPolicy: Retain
 allowVolumeExpansion: true
 ```
 

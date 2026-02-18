@@ -16,7 +16,7 @@ vars:
   CLUSTER_ENDPOINT: '{{.CLUSTER_ENDPOINT | default "https://192.168.1.100:6443"}}'
   NODE_IP: '{{.NODE_IP | default "192.168.1.100"}}'
   TALOS_DIR: "cluster/talos"
-  TALOS_DISK: "sda" # Update this if your target disk is different (e.g., sdb)
+  TALOS_DISK: "sda"
 
 tasks:
   gen-config:

@@ -14,7 +14,7 @@ spec:
           name: "byparr"
           image:
             repository: ghcr.io/thephaseless/byparr
-            tag: "latest"
+            tag: "v2.1.0"
           deployment:
             port: 8191
           service:
@@ -40,5 +40,6 @@ spec:
   syncPolicy:
     automated:
       prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true

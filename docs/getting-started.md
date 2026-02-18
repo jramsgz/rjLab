@@ -63,6 +63,10 @@ Reboot from disk after writing.
    - ArgoCD reads `bootstrap.yml` → deploys `cluster/bootstrap/` (ArgoCD config, cert-manager, Vault, ApplicationSets, OpenEBS)
    - ApplicationSets discover and deploy everything else
 
+   > **Note**: Talos `extraManifests` installs the upstream ArgoCD manifests directly.
+   > Once the bootstrap ArgoCD Application syncs, it replaces them with the kustomized
+   > version (which includes AVP sidecars and the `server.insecure` ConfigMap patch).
+
 ## Step 4: Set Up Storage
 
 ### Storage HDD (OpenEBS LVM)

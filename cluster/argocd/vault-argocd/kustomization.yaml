@@ -2,10 +2,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - https://github.com/argoproj/argo-cd//manifests/cluster-install?ref=v3.0.5
+  - ../argocd.namespace.yaml
+  - https://github.com/argoproj/argo-cd//manifests/cluster-install?ref=v3.3.0
   - cmp-plugin.yaml
 
-patchesStrategicMerge:
-  - argocd-repo-server.yaml
-  - config.yaml
-  - argocd-cmd-params.yaml
+patches:
+  - path: argocd-repo-server.yaml
+  - path: config.yaml
+  - path: argocd-cmd-params.yaml

@@ -20,6 +20,12 @@ spec:
               enabled: false
         loki:
           enabled: false
+        lvm-localpv:
+          lvmPlugin:
+            metricsPort: 9500
+          lvmNode:
+            serviceMonitor:
+              enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: openebs

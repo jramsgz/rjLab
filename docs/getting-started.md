@@ -135,9 +135,9 @@ kubectl create secret generic vault-token \
   --from-literal=token=$ROOT_TOKEN
 ```
 
-## Step 5b: Enable ArgoCD Vault Plugin
+## Step 6: Create ArgoCD Vault Credentials
 
-Create the vault-credentials secret and upgrade ArgoCD with AVP sidecars:
+Create the vault-credentials secret so the AVP sidecars (already deployed via bootstrap) can connect to Vault:
 
 ```bash
 # Create the vault-credentials secret for AVP
@@ -149,14 +149,11 @@ kubectl create secret generic vault-credentials \
   --from-literal=AVP_TYPE=vault \
   --from-literal=VAULT_ADDR=http://vault.vault.svc.cluster.local:8200 \
   --from-literal=VAULT_TOKEN=$ROOT_TOKEN
-
-# Patch ArgoCD with Vault Plugin sidecar containers
-task vault-avp
 ```
 
-This upgrades the ArgoCD `repo-server` with AVP CMP sidecars so that `<path:kv/...>` placeholders in manifests are resolved at sync time.
+The ArgoCD `repo-server` is deployed with AVP CMP sidecars from bootstrap. Once this secret is created, the sidecars will start resolving `<path:kv/...>` placeholders in manifests at sync time.
 
-## Step 6: Populate Vault Secrets
+## Step 7: Populate Vault Secrets
 
 ```bash
 # Port-forward Vault
@@ -166,7 +163,7 @@ export VAULT_ADDR=http://localhost:8200
 export VAULT_TOKEN=$(cat cluster-keys.json | jq -r ".root_token")
 
 # Cluster basics
-vault kv put kv/cluster domain="yourdomain.com" IP="192.168.1.100"
+vault kv put kv/cluster domain="yourdomain.com" IP="192.168.1.100" email="you@example.com"
 
 # Cloudflare DNS token
 vault kv put kv/cloudflare dnsToken="your-cloudflare-api-token"
@@ -201,7 +198,7 @@ vault kv put kv/radarr \
   url="http://radarr.radarr.svc.cluster.local:7878"
 ```
 
-## Step 7: Verify
+## Step 8: Verify
 
 ```bash
 # Check cluster health

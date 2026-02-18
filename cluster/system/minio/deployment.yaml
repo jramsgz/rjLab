@@ -65,4 +65,4 @@ spec:
         - name: data
           hostPath:
             path: /var/minio-data
-            type: DirectoryOrCreate
+            type: Directory

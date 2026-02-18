@@ -118,13 +118,9 @@ kubectl create secret generic vault-credentials \
   --from-literal=VAULT_TOKEN=$(jq -r ".root_token" cluster-keys.json)
 ```
 
-After creating this secret, upgrade ArgoCD to include the AVP sidecar containers:
+After creating this secret, the ArgoCD `repo-server` AVP sidecar containers (deployed automatically via the bootstrap kustomization) will be able to connect to Vault and resolve `<path:kv/...>` placeholders.
 
-```bash
-task vault-avp
-```
-
-This applies the kustomization in `cluster/argocd/vault-argocd/`, which patches the `argocd-repo-server` Deployment with AVP sidecar containers and the CMP plugin ConfigMap.
+The AVP configuration is defined in `cluster/argocd/vault-argocd/`, which patches the `argocd-repo-server` Deployment with AVP sidecar containers and the CMP plugin ConfigMap.
 
 Once everything is applied, you can use AVP placeholders in any manifest. For example, to hide the domain in an Ingress:
 

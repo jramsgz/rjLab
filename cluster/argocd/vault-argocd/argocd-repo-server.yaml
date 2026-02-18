@@ -15,14 +15,14 @@ spec:
 
       initContainers:
       - name: download-tools
-        image: registry.access.redhat.com/ubi8
+        image: registry.access.redhat.com/ubi8:8.10
         env:
           - name: AVP_VERSION
             value: 1.18.0
         command: [sh, -c]
         args:
           - >-
-            curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-vault-plugin &&
+            curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v${AVP_VERSION}/argocd-vault-plugin_${AVP_VERSION}_linux_amd64 -o argocd-vault-plugin &&
             chmod +x argocd-vault-plugin &&
             mv argocd-vault-plugin /custom-tools/
 
@@ -33,7 +33,7 @@ spec:
       containers:
       - name: avp-helm
         command: [/var/run/argocd/argocd-cmp-server]
-        image: quay.io/argoproj/argocd:v2.14.21
+        image: quay.io/argoproj/argocd:v3.3.0
         envFrom:
           - secretRef:
               name: vault-credentials 
@@ -56,7 +56,7 @@ spec:
 
       - name: avp-kustomize
         command: [/var/run/argocd/argocd-cmp-server]
-        image: quay.io/argoproj/argocd:v2.14.21
+        image: quay.io/argoproj/argocd:v3.3.0
         envFrom:
           - secretRef:
               name: vault-credentials 
@@ -79,7 +79,7 @@ spec:
 
       - name: avp
         command: [/var/run/argocd/argocd-cmp-server]
-        image: quay.io/argoproj/argocd:v2.14.21
+        image: quay.io/argoproj/argocd:v3.3.0
         envFrom:
           - secretRef:
               name: vault-credentials 

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: loki-stack
+  name: loki
   namespace: argocd
 spec:
   project: default
@@ -21,13 +21,70 @@ spec:
     namespace: monitoring
   source:
     repoURL: https://grafana.github.io/helm-charts
-    chart: loki-stack
-    targetRevision: 2.10.3
+    chart: loki
+    targetRevision: 6.27.0
     helm:
       values: |
-        fluent-bit:
-          enabled: true
-        promtail:
+        deploymentMode: SingleBinary
+        loki:
+          commonConfig:
+            replication_factor: 1
+          storage:
+            type: filesystem
+          auth_enabled: false
+          schemaConfig:
+            configs:
+              - from: "2024-01-01"
+                store: tsdb
+                object_store: filesystem
+                schema: v13
+                index:
+                  prefix: index_
+                  period: 24h
+        singleBinary:
+          replicas: 1
+          persistence:
+            size: 10Gi
+        chunksCache:
           enabled: false
-        grafana:
+        resultsCache:
           enabled: false
+        backend:
+          replicas: 0
+        read:
+          replicas: 0
+        write:
+          replicas: 0
+        gateway:
+          enabled: false
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promtail
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    managedNamespaceMetadata:
+      labels:
+        pod-security.kubernetes.io/enforce: privileged
+        pod-security.kubernetes.io/audit: privileged
+        pod-security.kubernetes.io/warn: privileged
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: promtail
+    targetRevision: 6.16.6
+    helm:
+      values: |
+        config:
+          clients:
+            - url: http://loki:3100/loki/api/v1/push

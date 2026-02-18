@@ -119,8 +119,6 @@ External DNS is already configured in `cluster/system/external-dns/` and will au
 
 [Create an API key in Cloudflare that can edit your DNS records](https://dash.cloudflare.com/profile/api-tokens) of the domain (Zone) you configured in Cloudflare.
 
-![API Dashboard Cloudflare](./img/cloudflare-token.png)
-
 Store the token in Vault:
 
 ```bash

@@ -1,0 +1,31 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: minio-default-deny
+  namespace: minio
+spec:
+  endpointSelector: {}
+  ingressDeny:
+    - {}
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: minio
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: minio-allow-volsync
+  namespace: minio
+spec:
+  endpointSelector:
+    matchLabels:
+      app: minio
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: volsync-system
+      toPorts:
+        - ports:
+            - port: "9000"
+              protocol: TCP

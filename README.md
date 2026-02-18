@@ -1,15 +1,3 @@
-<p align="center">
-    <br>
-    <a href="#"><img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&center=true&vCenter=true&width=435&lines=Homelab+made+simple;Talos+go+brrrrr;GitOps+FTW" alt="Typing SVG" /></a>
-</p>
-
-<div align="center">
-
-  [![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.32.3-blue?style=for-the-badge&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
-  [![Linux](https://img.shields.io/badge/Talos-v1.9.5-blue?style=for-the-badge&logo=linux&logoColor=white)](https://talos.dev/)
-
-</div>
-
 # HomeLab
 
 <div align="center">
@@ -79,9 +67,9 @@ After cluster bootstrap, populate these Vault paths:
 | `kv/grafana` | `user`, `pass`, `prometheus_user`, `prometheus_pass` | Grafana, Prometheus basic auth |
 | `kv/kyoo` | `apikey`, `tmdb` | Kyoo media server |
 | `kv/minio` | `rootUser`, `rootPassword` | Minio deployment |
-| `kv/radarr` | `token` | Radarr |
+| `kv/radarr` | `token`, `url` | Radarr, Exportarr |
 | `kv/restic` | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `RESTIC_PASSWORD`, `RESTIC_REPOSITORY` | Volsync backups |
-| `kv/sonarr` | `token` | Sonarr |
+| `kv/sonarr` | `token`, `url` | Sonarr, Exportarr |
 
 ## Usage
 
@@ -100,3 +88,5 @@ task upgrade-talos     # Upgrade Talos (pass version as arg)
 task upgrade-k8s       # Upgrade Kubernetes (pass version as arg)
 ```
 
+Install kromgo
+Install glance

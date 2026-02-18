@@ -6,31 +6,10 @@ This cluster uses [OpenEBS LVM LocalPV](https://openebs.io/docs/user-guides/loca
 
 ### 1. Create the LVM Volume Group
 
-After installing Talos and bootstrapping the cluster, create an LVM volume group on the storage disk. Since Talos is immutable, use a privileged debug pod:
+After installing Talos and bootstrapping the cluster, create an LVM volume group on the storage disk. Since Talos is immutable, use a privileged debug pod (see [Getting Started - Step 4](getting-started.md#step-4-set-up-storage) for the full command):
 
 ```bash
-# First, identify the storage disk
-talosctl -n <NODE_IP> disks
-
-# Launch a privileged pod
-kubectl run --rm -it lvm-setup --image=ubuntu:24.04 --privileged --overrides='
-{
-  "spec": {
-    "hostPID": true,
-    "containers": [{
-      "name": "lvm-setup",
-      "image": "ubuntu:24.04",
-      "command": ["chroot", "/host", "bash"],
-      "stdin": true,
-      "tty": true,
-      "securityContext": {"privileged": true},
-      "volumeMounts": [{"name": "host", "mountPath": "/host"}]
-    }],
-    "volumes": [{"name": "host", "hostPath": {"path": "/"}}]
-  }
-}'
-
-# Inside the pod:
+# Inside the debug pod:
 apt-get update && apt-get install -y lvm2
 pvcreate /dev/sdb       # Replace with your storage disk
 vgcreate lvmvg /dev/sdb

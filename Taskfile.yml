@@ -134,12 +134,6 @@ tasks:
         VAULT_UNSEAL_KEY=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[0]")
         kubectl exec -n vault vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
 
-  vault-avp:
-    desc: Patch ArgoCD with Vault Plugin sidecar containers
-    cmds:
-      - kubectl apply -k cluster/argocd/vault-argocd/ -n argocd
-      - echo "ArgoCD repo-server will restart with AVP sidecars"
-
   vault-port-forward:
     desc: Port-forward Vault UI to localhost:8200
     cmds:

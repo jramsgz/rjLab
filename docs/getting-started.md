@@ -71,28 +71,53 @@ After the cluster is running, create an LVM volume group on the storage disk:
 
 ```bash
 # Find your storage disk
-talosctl -n <NODE_IP> disks
+talosctl get disks --nodes <NODE_IP> --endpoints <NODE_IP> --talosconfig cluster/talos/talosconfig
 
-# Create partition table + LVM VG via a debug pod
-kubectl run --rm -it lvm-setup --image=ubuntu:24.04 --privileged --overrides='
-{
-  "spec": {
-    "hostPID": true,
-    "containers": [{
-      "name": "lvm-setup",
-      "image": "ubuntu:24.04",
-      "command": ["chroot", "/host", "bash"],
-      "stdin": true,
-      "tty": true,
-      "securityContext": {"privileged": true},
-      "volumeMounts": [{"name": "host", "mountPath": "/host"}]
-    }],
-    "volumes": [{"name": "host", "hostPath": {"path": "/"}}]
-  }
-}'
-# Inside the pod:
-# pvcreate /dev/sdb
-# vgcreate lvmvg /dev/sdb
+# Create a namespace with privileged PodSecurity (required for host access)
+kubectl create namespace debug
+kubectl label namespace debug pod-security.kubernetes.io/enforce=privileged
+
+# Create a debug pod with LVM tools and host /dev access
+# (chroot won't work on Talos — it has no shell on the host rootfs)
+kubectl apply -f - <<'EOF'
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lvm-setup
+  namespace: debug
+spec:
+  hostPID: true
+  containers:
+  - name: lvm-setup
+    image: ubuntu:24.04
+    command: ["bash", "-c", "apt-get update && apt-get install -y lvm2 && echo READY && sleep 3600"]
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: dev
+      mountPath: /dev
+    - name: run-udev
+      mountPath: /run/udev
+  volumes:
+  - name: dev
+    hostPath:
+      path: /dev
+  - name: run-udev
+    hostPath:
+      path: /run/udev
+  restartPolicy: Never
+EOF
+
+# Wait for lvm2 to be installed
+kubectl wait --for=condition=Ready pod/lvm-setup -n debug --timeout=180s
+
+# Create the LVM physical volume and volume group
+kubectl exec lvm-setup -n debug -- pvcreate /dev/sdb
+kubectl exec lvm-setup -n debug -- vgcreate lvmvg /dev/sdb
+
+# Clean up
+kubectl delete pod lvm-setup -n debug
+kubectl delete namespace debug
 ```
 
 The OpenEBS ArgoCD Application (`cluster/bootstrap/openebs.yaml`) will create the `openebs-lvmpv` StorageClass automatically.
@@ -122,14 +147,16 @@ kubectl get pods -n vault -w
 task vault-init
 # This outputs cluster-keys.json — SAVE THIS SECURELY
 
-# Unseal Vault
+# Unseal Vault (joins and unseals all replicas)
 task vault-unseal
 
 # Enable KV v1 secrets engine
-kubectl exec -n vault vault-0 -- vault secrets enable -path=kv -version=1 kv
+ROOT_TOKEN=$(cat cluster-keys.json | jq -r ".root_token")
+kubectl exec -n vault vault-0 -- sh -c "VAULT_TOKEN=$ROOT_TOKEN vault secrets enable -path=kv -version=1 kv"
 
 # Create the Vault token secret for External Secrets
-ROOT_TOKEN=$(cat cluster-keys.json | jq -r ".root_token")
+# (namespace may not exist yet — ApplicationSets haven't synced)
+kubectl create namespace external-secrets --dry-run=client -o yaml | kubectl apply -f -
 kubectl create secret generic vault-token \
   --namespace external-secrets \
   --from-literal=token=$ROOT_TOKEN

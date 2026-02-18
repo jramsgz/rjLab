@@ -128,11 +128,18 @@ tasks:
       - echo "Run 'task vault-unseal' to unseal Vault"
 
   vault-unseal:
-    desc: Unseal Vault using the saved keys
+    desc: Unseal Vault using the saved keys (all replicas)
     cmds:
       - |
         VAULT_UNSEAL_KEY=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[0]")
-        kubectl exec -n vault vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
+        kubectl exec -n vault vault-0 -- sh -c "vault operator unseal $VAULT_UNSEAL_KEY"
+      - |
+        VAULT_UNSEAL_KEY=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[0]")
+        for pod in vault-1 vault-2; do
+          echo "Joining and unsealing $pod..."
+          kubectl exec -n vault $pod -- vault operator raft join http://vault-0.vault-internal:8200 || true
+          kubectl exec -n vault $pod -- sh -c "vault operator unseal $VAULT_UNSEAL_KEY"
+        done
 
   vault-port-forward:
     desc: Port-forward Vault UI to localhost:8200

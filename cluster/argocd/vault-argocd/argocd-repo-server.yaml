@@ -15,7 +15,7 @@ spec:
 
       initContainers:
       - name: download-tools
-        image: registry.access.redhat.com/ubi8:8.10
+        image: registry.access.redhat.com/ubi8:8.10-1770785762
         env:
           - name: AVP_VERSION
             value: 1.18.0

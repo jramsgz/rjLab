@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="generator" content="mkdocs-1.6.1, mkdocs-terminal-4.8.0">
+     
+     
+    <link rel="icon" type="image/png" sizes="192x192" href="../img/android-chrome-192x192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="../img/android-chrome-512x512.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="../img/apple-touch-icon.png" />
+<link rel="shortcut icon" type="image/png" sizes="48x48" href="../img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="../img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32x32.png" />
+
+
+    
+ 
+<title>Getting Started - HomeLab GitOps</title>
+
+
+<link href="../css/fontawesome/css/fontawesome.min.css" rel="stylesheet">
+<link href="../css/fontawesome/css/solid.min.css" rel="stylesheet">
+<link href="../css/normalize.css" rel="stylesheet">
+<link href="../css/terminal.css" rel="stylesheet">
+<link href="../css/theme.css" rel="stylesheet">
+<link href="../css/theme.tile_grid.css" rel="stylesheet">
+<link href="../css/theme.footer.css" rel="stylesheet">
+<!-- default color palette -->
+<link href="../css/palettes/default.css" rel="stylesheet">
+
+<!-- page layout -->
+<style>
+/* initially set page layout to a one column grid */
+.terminal-mkdocs-main-grid {
+    display: grid;
+    grid-column-gap: 1.4em;
+    grid-template-columns: auto;
+    grid-template-rows: auto;
+}
+
+/*  
+*   when side navigation is not hidden, use a two column grid.  
+*   if the screen is too narrow, fall back to the initial one column grid layout.
+*   in this case the main content will be placed under the navigation panel. 
+*/
+@media only screen and (min-width: 70em) {
+    .terminal-mkdocs-main-grid {
+        grid-template-columns: 4fr 9fr;
+    }
+}</style>
+
+
+
+     
+    
+    
+
+    
+    <!-- search css support -->
+<link href="../css/search/bootstrap-modal.css" rel="stylesheet">
+<!-- search scripts -->
+<script>
+    var base_url = "..",
+    shortcuts = "{}";
+</script>
+<script src="../js/jquery/jquery-1.10.1.min.js" defer></script>
+<script src="../js/bootstrap/bootstrap.min.js" defer></script>
+<script src="../js/mkdocs/base.js" defer></script>
+    
+    
+    
+    
+    <script src="../search/main.js"></script>
+    
+
+    
+</head>
+
+<body class="terminal"><div class="container">
+    <div class="terminal-nav">
+        <header class="terminal-logo">
+            <div id="mkdocs-terminal-site-name" class="logo terminal-prompt"><a href="/" class="no-style">HomeLab GitOps</a></div>
+        </header>
+        
+        <nav class="terminal-menu">
+            
+            <ul vocab="https://schema.org/" typeof="BreadcrumbList">
+                
+                
+                <li property="itemListElement" typeof="ListItem">
+                    <a href=".." class="menu-item " property="item" typeof="WebPage">
+                        <span property="name">Welcome</span>
+                    </a>
+                    <meta property="position" content="0">
+                </li>
+                
+                
+                <li property="itemListElement" typeof="ListItem">
+                    <a href="../backup/" class="menu-item " property="item" typeof="WebPage">
+                        <span property="name">Backup</span>
+                    </a>
+                    <meta property="position" content="1">
+                </li>
+                
+                
+                <li property="itemListElement" typeof="ListItem">
+                    <a href="../cloudflared/" class="menu-item " property="item" typeof="WebPage">
+                        <span property="name">Cloudflared</span>
+                    </a>
+                    <meta property="position" content="2">
+                </li>
+                
+                
+                <li property="itemListElement" typeof="ListItem">
+                    <a href="../ebs-lvm/" class="menu-item " property="item" typeof="WebPage">
+                        <span property="name">Storage (OpenEBS LVM)</span>
+                    </a>
+                    <meta property="position" content="3">
+                </li>
+                
+                
+                <li property="itemListElement" typeof="ListItem">
+                    <a href="./" class="menu-item active" property="item" typeof="WebPage">
+                        <span property="name">Getting Started</span>
+                    </a>
+                    <meta property="position" content="4">
+                </li>
+                
+                
+                <li property="itemListElement" typeof="ListItem">
+                    <a href="../secret-management/" class="menu-item " property="item" typeof="WebPage">
+                        <span property="name">Secret Management</span>
+                    </a>
+                    <meta property="position" content="5">
+                </li>
+                
+                    
+                    
+
+
+<li property="itemListElement" typeof="ListItem">
+    <a href="#" class="menu-item" data-toggle="modal" data-target="#mkdocs_search_modal" property="item" typeof="SearchAction">
+        <i aria-hidden="true" class="fa fa-search"></i> <span property="name">Search</span>
+    </a>
+    <meta property="position" content="6">
+</li>
+                    
+            </ul>
+            
+        </nav>
+    </div>
+</div>
+        
+    <div class="container">
+        <div class="terminal-mkdocs-main-grid"><aside id="terminal-mkdocs-side-panel"><nav>
+    <ul class="terminal-mkdocs-side-nav-items">
+        
+          <li class="terminal-mkdocs-side-nav-li">
+    
+    
+    
+        
+        
+            <a class="terminal-mkdocs-side-nav-item" href="..">Welcome</a>
+        
+    
+    
+    
+       </li>
+        
+          <li class="terminal-mkdocs-side-nav-li">
+    
+    
+    
+        
+        
+            <a class="terminal-mkdocs-side-nav-item" href="../backup/">Backup</a>
+        
+    
+    
+    
+       </li>
+        
+          <li class="terminal-mkdocs-side-nav-li">
+    
+    
+    
+        
+        
+            <a class="terminal-mkdocs-side-nav-item" href="../cloudflared/">Cloudflared</a>
+        
+    
+    
+    
+       </li>
+        
+          <li class="terminal-mkdocs-side-nav-li">
+    
+    
+    
+        
+        
+            <a class="terminal-mkdocs-side-nav-item" href="../ebs-lvm/">Storage (OpenEBS LVM)</a>
+        
+    
+    
+    
+       </li>
+        
+          <li class="terminal-mkdocs-side-nav-li">
+    
+    
+    
+        
+        <span class="terminal-mkdocs-side-nav-item--active">Getting Started</span>
+    
+    
+    
+       </li>
+        
+          <li class="terminal-mkdocs-side-nav-li">
+    
+    
+    
+        
+        
+            <a class="terminal-mkdocs-side-nav-item" href="../secret-management/">Secret Management</a>
+        
+    
+    
+    
+       </li>
+        
+    </ul>
+</nav><hr>
+<nav>
+    <ul>
+        <li><a href="#getting-started">Getting Started</a></li>
+        <li><a href="#prerequisites">Prerequisites</a></li><li><a href="#step-1-get-a-talos-image">Step 1: Get a Talos Image</a></li><li><a href="#step-2-install-talos-on-the-machine">Step 2: Install Talos on the Machine</a></li><li><a href="#step-3-configure-and-deploy">Step 3: Configure and Deploy</a></li><li><a href="#step-4-set-up-storage">Step 4: Set Up Storage</a></li><li><a href="#step-5-initialize-vault">Step 5: Initialize Vault</a></li><li><a href="#step-6-create-argocd-vault-credentials">Step 6: Create ArgoCD Vault Credentials</a></li><li><a href="#step-7-populate-vault-secrets">Step 7: Populate Vault Secrets</a></li><li><a href="#step-8-verify">Step 8: Verify</a></li><li><a href="#upgrading">Upgrading</a></li>
+    </ul>
+</nav>
+</aside>
+            <main id="terminal-mkdocs-main-content">
+<section id="mkdocs-terminal-content">
+    <h1 id="getting-started">Getting Started</h1>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>A bare-metal machine (amd64) with 2 HDDs:</li>
+<li><strong>HDD 1</strong>: Storage disk (OpenEBS LVM)</li>
+<li><strong>HDD 2</strong>: Backup disk (Minio)</li>
+<li>A domain managed by Cloudflare</li>
+<li><a href="https://www.talos.dev/latest/talos-guides/install/talosctl/">talosctl</a> installed on your workstation</li>
+<li><a href="https://taskfile.dev/installation/">task</a> installed on your workstation</li>
+<li><a href="https://kubernetes.io/docs/tasks/tools/">kubectl</a> installed on your workstation</li>
+</ul>
+<h2 id="step-1-get-a-talos-image">Step 1: Get a Talos Image</h2>
+<p>Go to the <a href="https://factory.talos.dev/">Talos Image Factory</a> and create a schematic with these extensions:</p>
+<ul>
+<li><code>siderolabs/iscsi-tools</code> (required for OpenEBS LVM)</li>
+<li><code>siderolabs/util-linux-tools</code> (useful utilities)</li>
+</ul>
+<p>Download the ISO or raw disk image for your architecture (amd64). Save your <strong>Schematic ID</strong> — you'll need it for upgrades.</p>
+<h2 id="step-2-install-talos-on-the-machine">Step 2: Install Talos on the Machine</h2>
+<h3 id="option-a-usb-boot">Option A: USB Boot</h3>
+<p>Write the ISO to a USB drive and boot from it:</p>
+<pre><code class="language-bash">dd if=talos-amd64.iso of=/dev/sdX bs=4M status=progress
+</code></pre>
+<h3 id="option-b-rescue-mode-eg-ovh">Option B: Rescue Mode (e.g., OVH)</h3>
+<p>If your server is hosted, boot into rescue mode and write the image directly:</p>
+<pre><code class="language-bash">wget https://factory.talos.dev/image/&lt;SCHEMATIC_ID&gt;/v1.9.5/metal-amd64.raw.xz
+xz -d metal-amd64.raw.xz
+dd if=metal-amd64.raw of=/dev/sda bs=4M status=progress
+</code></pre>
+<p>Reboot from disk after writing.</p>
+<h2 id="step-3-configure-and-deploy">Step 3: Configure and Deploy</h2>
+<ol>
+<li>
+<p><strong>Fork/clone this repo</strong></p>
+</li>
+<li>
+<p><strong>Create your environment file</strong>:
+   <code>bash
+   cp .env.example .env
+   # Edit .env with your node IP, cluster name, schematic ID</code></p>
+</li>
+<li>
+<p><strong>Generate and apply the Talos config</strong>:
+   <code>bash
+   task gen-config      # Generates controlplane.yaml with all patches
+   task apply-config    # Applies config to the node (first time: --insecure)</code></p>
+</li>
+<li>
+<p><strong>Bootstrap the cluster</strong> (first time only):
+   <code>bash
+   task bootstrap       # Initializes etcd and the control plane
+   task kubeconfig      # Downloads kubeconfig to ~/.kube/config</code></p>
+</li>
+<li>
+<p><strong>Wait for self-provisioning</strong>:</p>
+</li>
+<li>Talos boots → extraManifests install Cilium + ArgoCD + metrics-server</li>
+<li>ArgoCD reads <code>bootstrap.yml</code> → deploys <code>cluster/bootstrap/</code> (ArgoCD config, cert-manager, Vault, ApplicationSets, OpenEBS)</li>
+<li>ApplicationSets discover and deploy everything else</li>
+</ol>
+<blockquote>
+<p><strong>Note</strong>: Talos <code>extraManifests</code> installs the upstream ArgoCD manifests directly.
+Once the bootstrap ArgoCD Application syncs, it replaces them with the kustomized
+version (which includes AVP sidecars and the <code>server.insecure</code> ConfigMap patch).</p>
+</blockquote>
+<h2 id="step-4-set-up-storage">Step 4: Set Up Storage</h2>
+<h3 id="storage-hdd-openebs-lvm">Storage HDD (OpenEBS LVM)</h3>
+<p>After the cluster is running, create an LVM volume group on the storage disk:</p>
+<pre><code class="language-bash"># Find your storage disk
+talosctl get disks --nodes &lt;NODE_IP&gt; --endpoints &lt;NODE_IP&gt; --talosconfig cluster/talos/talosconfig
+
+# Create a namespace with privileged PodSecurity (required for host access)
+kubectl create namespace debug
+kubectl label namespace debug pod-security.kubernetes.io/enforce=privileged
+
+# Create a debug pod with LVM tools and host /dev access
+# (chroot won't work on Talos — it has no shell on the host rootfs)
+kubectl apply -f - &lt;&lt;'EOF'
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lvm-setup
+  namespace: debug
+spec:
+  hostPID: true
+  containers:
+  - name: lvm-setup
+    image: ubuntu:24.04
+    command: [&quot;bash&quot;, &quot;-c&quot;, &quot;apt-get update &amp;&amp; apt-get install -y lvm2 &amp;&amp; echo READY &amp;&amp; sleep 3600&quot;]
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: dev
+      mountPath: /dev
+    - name: run-udev
+      mountPath: /run/udev
+  volumes:
+  - name: dev
+    hostPath:
+      path: /dev
+  - name: run-udev
+    hostPath:
+      path: /run/udev
+  restartPolicy: Never
+EOF
+
+# Wait for lvm2 to be installed
+kubectl wait --for=condition=Ready pod/lvm-setup -n debug --timeout=180s
+
+# Create the LVM physical volume and volume group
+kubectl exec lvm-setup -n debug -- pvcreate /dev/sdb
+kubectl exec lvm-setup -n debug -- vgcreate lvmvg /dev/sdb
+
+# Clean up
+kubectl delete pod lvm-setup -n debug
+kubectl delete namespace debug
+</code></pre>
+<p>The OpenEBS ArgoCD Application (<code>cluster/bootstrap/openebs.yaml</code>) will create the <code>openebs-lvmpv</code> StorageClass automatically.</p>
+<h3 id="backup-hdd-minio">Backup HDD (Minio)</h3>
+<p>The backup disk is mounted via the Talos patch <code>cluster/patches/backup-disk.yml</code>. Ensure the disk is formatted and the mount path matches:</p>
+<pre><code class="language-bash"># Format the backup disk (if needed) via debug pod
+# mkfs.ext4 /dev/sdc
+# mkdir -p /var/minio-data
+# mount /dev/sdc /var/minio-data
+</code></pre>
+<p>The Minio deployment (<code>cluster/system/minio/</code>) uses a <code>hostPath</code> volume pointing to <code>/var/minio-data</code>.</p>
+<h2 id="step-5-initialize-vault">Step 5: Initialize Vault</h2>
+<p>Vault must be initialized and unsealed manually on first boot:</p>
+<pre><code class="language-bash"># Wait for Vault pod to be running
+kubectl get pods -n vault -w
+
+# Initialize Vault
+task vault-init
+# This outputs cluster-keys.json — SAVE THIS SECURELY
+
+# Unseal Vault (joins and unseals all replicas)
+task vault-unseal
+
+# Enable KV v1 secrets engine
+ROOT_TOKEN=$(cat cluster-keys.json | jq -r &quot;.root_token&quot;)
+kubectl exec -n vault vault-0 -- sh -c &quot;VAULT_TOKEN=$ROOT_TOKEN vault secrets enable -path=kv -version=1 kv&quot;
+
+# Create the Vault token secret for External Secrets
+# (namespace may not exist yet — ApplicationSets haven't synced)
+kubectl create namespace external-secrets --dry-run=client -o yaml | kubectl apply -f -
+kubectl create secret generic vault-token \
+  --namespace external-secrets \
+  --from-literal=token=$ROOT_TOKEN
+</code></pre>
+<h2 id="step-6-create-argocd-vault-credentials">Step 6: Create ArgoCD Vault Credentials</h2>
+<p>Create the vault-credentials secret so the AVP sidecars (already deployed via bootstrap) can connect to Vault:</p>
+<pre><code class="language-bash"># Create the vault-credentials secret for AVP
+ROOT_TOKEN=$(cat cluster-keys.json | jq -r &quot;.root_token&quot;)
+kubectl create secret generic vault-credentials \
+  --namespace argocd \
+  --from-literal=AVP_AUTH_TYPE=token \
+  --from-literal=AVP_KV_VERSION=1 \
+  --from-literal=AVP_TYPE=vault \
+  --from-literal=VAULT_ADDR=http://vault.vault.svc.cluster.local:8200 \
+  --from-literal=VAULT_TOKEN=$ROOT_TOKEN
+</code></pre>
+<p>The ArgoCD <code>repo-server</code> is deployed with AVP CMP sidecars from bootstrap. Once this secret is created, the sidecars will start resolving <code>&lt;path:kv/...&gt;</code> placeholders in manifests at sync time.</p>
+<h2 id="step-7-populate-vault-secrets">Step 7: Populate Vault Secrets</h2>
+<pre><code class="language-bash"># Port-forward Vault
+task vault-port-forward &amp;
+
+export VAULT_ADDR=http://localhost:8200
+export VAULT_TOKEN=$(cat cluster-keys.json | jq -r &quot;.root_token&quot;)
+
+# Cluster basics
+vault kv put kv/cluster domain=&quot;yourdomain.com&quot; IP=&quot;192.168.1.100&quot; email=&quot;you@example.com&quot;
+
+# Cloudflare DNS token
+vault kv put kv/cloudflare dnsToken=&quot;your-cloudflare-api-token&quot;
+
+# Grafana
+vault kv put kv/grafana user=&quot;admin&quot; pass=&quot;your-grafana-password&quot; \
+  prometheus_user=&quot;prometheus&quot; prometheus_pass=&quot;your-prom-password&quot;
+
+# Minio
+vault kv put kv/minio rootUser=&quot;minioadmin&quot; rootPassword=&quot;your-minio-password&quot;
+
+# Restic backup credentials (use Minio creds)
+vault kv put kv/restic \
+  AWS_ACCESS_KEY_ID=&quot;minioadmin&quot; \
+  AWS_SECRET_ACCESS_KEY=&quot;your-minio-password&quot; \
+  RESTIC_PASSWORD=&quot;your-restic-encryption-password&quot; \
+  RESTIC_REPOSITORY=&quot;s3:http://minio.minio.svc.cluster.local:9000/backups&quot;
+
+# --- App secrets (add when deploying apps) ---
+
+# Kyoo (media server)
+vault kv put kv/kyoo apikey=&quot;your-kyoo-api-key&quot; tmdb=&quot;your-tmdb-api-key&quot;
+
+# Sonarr
+vault kv put kv/sonarr \
+  token=&quot;your-sonarr-api-key&quot; \
+  url=&quot;http://sonarr.sonarr.svc.cluster.local:8989&quot;
+
+# Radarr
+vault kv put kv/radarr \
+  token=&quot;your-radarr-api-key&quot; \
+  url=&quot;http://radarr.radarr.svc.cluster.local:7878&quot;
+</code></pre>
+<h2 id="step-8-verify">Step 8: Verify</h2>
+<pre><code class="language-bash"># Check cluster health
+task health
+
+# Check ArgoCD applications
+kubectl get applications -n argocd
+
+# Access ArgoCD UI (get initial admin password)
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=&quot;{.data.password}&quot; | base64 -d
+# Then access via the ingress: https://argocd.&lt;your-domain&gt;
+</code></pre>
+<h2 id="upgrading">Upgrading</h2>
+<h3 id="talos">Talos</h3>
+<pre><code class="language-bash">task upgrade-talos -- v1.10.0
+</code></pre>
+<h3 id="kubernetes">Kubernetes</h3>
+<pre><code class="language-bash">task upgrade-k8s -- v1.33.0
+</code></pre>
+</section>
+
+            </main>
+        </div>
+        <hr><footer>
+    <div class="terminal-mkdocs-footer-grid">
+        <div id="terminal-mkdocs-footer-copyright-info">
+             Site built with <a href="http://www.mkdocs.org">MkDocs</a> and <a href="https://github.com/ntno/mkdocs-terminal">Terminal for MkDocs</a>.
+        </div>
+    </div>
+</footer>
+    </div>
+
+    
+    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="alertdialog" aria-modal="true" aria-labelledby="searchModalLabel">
+    <div class="modal-dialog modal-lg" role="search">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="searchModalLabel">Search</h5>
+                <button type="button" class="close btn btn-default btn-ghost" data-dismiss="modal" aria-label="Close">x</button>
+            </div>
+            <div class="modal-body">
+                <p id="searchInputLabel">Type to start searching</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" aria-labelledby="searchInputLabel" placeholder="" id="mkdocs-search-query" title="Please enter search terms here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No document matches found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</body>
+
+</html>
